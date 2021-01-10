@@ -1,43 +1,29 @@
 # Home Library
 
-Home Library is a flask-based website that lets you save your favorite books.
+Home Library to domowa biblioteczka dzięki której możesz zapisywać swoje ulubione książki
 
-## Prerequisites
-
-* Python 3.9+
-
-## Installation
-
-Clone the repo via Git
-```
-git clone https://github.com/..
-```
-Install packages required using pip
+Zainstaluj wszystkie niezbędne dodatki używając pip
 ```
 pip install -r requirements.txt
 ```
 
-## Usage
+## Uruchomienie
 
-Run the server
+Uruchomienie serwera
 ```
 python home_library.py
 ```
-Visit http://localhost:5000 using your browser, from there start adding books
-using the dedicated form or view them in the My Books section, sorting as you prefer.
-You can take a closer look to each book by clicking on their titles,
-and also edit their labels or delete them completely.
+Otwórz w przeglądarce adres http://localhost:5000 , możesz przeglądać swoje książki, edytować je, sortować czy też usuwać. Kliknięcie na daną pozycję spowoduje wyświetlenie kilku podstawowych informaji o książce oraz krótki jej opis.
 
 ## REST Api
 
-Home Library is provided with a REST Api to get, create, edit and delete books in your
-library using HTTP requests.
+Biblioteka domowa jest wyposażona w REST Api do pobierania, tworzenia, edytowania i usuwania książek w
+biblioteka korzystająca z żądań HTTP.
 
-All of the examples provided are using python requests library.
 
 ### GET
 
-Use GET requests to get all of the library data or a specified book's information.
+Użyj żądań GET, aby uzyskać wszystkie dane biblioteki lub informacje o określonej książce.
 
 ```python
 import requests
@@ -59,7 +45,7 @@ requests.get("http://localhost:5000/api/v1/books/%d" % book_id)
 
 ### POST
 
-Use POST requests to save new books into the library, send json data.
+Użyj żądań POST, aby zapisać nowe książki w bibliotece i wysłać dane json.
 
 ```python
 import json
@@ -84,7 +70,7 @@ requests.post("http://localhost:5000/api/v1/books", json=json.dumps(data))
 
 ### DELETE
 
-Use DELETE requests to remove books from the library.
+Użyj żądań USUŃ, aby usunąć książki z biblioteki.
 
 ```python
 import requests
@@ -95,8 +81,7 @@ requests.delete("http://localhost:5000/api/v1/books/%d" % book_id)
 
 ### PUT
 
-Use PUT requests to update specific books in the library.
-
+Użyj żądań PUT, aby zaktualizować określone książki w bibliotece.
 ```python
 import json
 import requests
