@@ -16,13 +16,16 @@ Library.FILEPATH = os.path.join(
     "books.json"
 )
 
+
 def load_library():
     return Library.from_json(Library.FILEPATH)
+
 
 def valid_get(obj):
     val_key = obj.get("sort_key", "id") in list(Book.DEFAULTS.keys()) + ["id"]
     val_order = obj.get("sort_order", "asc") in ["asc", "desc"]
     return val_key and val_order
+
 
 def valid_post_put(obj, post=True):
     if post:
@@ -39,13 +42,15 @@ def valid_post_put(obj, post=True):
     )
     val_list = "genres" not in obj or len(obj.get("genres", [])) == 3
     return keys and val_int and val_list
-   
+
+
 @app.errorhandler(404)
 def not_found(error):
     return make_response(jsonify({
         'error': 'Not found',
         'status_code': 404
     }), 404)
+
 
 @app.errorhandler(400)
 def bad_request(error):
@@ -54,10 +59,12 @@ def bad_request(error):
         'status_code': 400
     }), 400)
 
+
 @app.route("/")
 def index():
     return render_template("index.html")
-    
+ 
+
 @app.route("/books")
 @app.route("/books/<int:id>")
 def books(id=None):
@@ -73,6 +80,7 @@ def books(id=None):
             return redirect("/books?sort_key=id&sort_order=asc")
         books = library.get_books(**sort)
         return render_template("books.html", books=books, args=sort)
+
 
 @app.route("/edit_book/", methods=["GET", "POST"])
 @app.route("/edit_book/<id>", methods=["GET", "POST"])
@@ -108,6 +116,7 @@ def edit_book(id=None):
                 "editbook.html", book=book,
                 form=form, error=error)
 
+
 @app.route("/delete_book/<int:id>")
 def delete_book(id):
     library = load_library()
@@ -115,6 +124,7 @@ def delete_book(id):
     library.reorder()
     library.save()
     return redirect("/books")
+
 
 @app.route("/api/v1/books", methods=["GET"])
 def api_list_books():
@@ -135,6 +145,7 @@ def api_list_books():
         "sort_order": args.get("sort_order", "asc"),
     })
 
+
 @app.route("/api/v1/books/<int:id>", methods=["GET"])
 def api_get_book(id):
     library = load_library()
@@ -142,6 +153,7 @@ def api_get_book(id):
     if not book:
         abort(404)
     return jsonify({"book": book.to_dict()})
+
 
 @app.route("/api/v1/books", methods=["POST"])
 def api_new_book():
@@ -159,6 +171,7 @@ def api_new_book():
     library.save()
     return jsonify({'book': book.to_dict()}), 201
 
+
 @app.route("/api/v1/books/<int:id>", methods=["DELETE"])
 def api_delete_book(id):
     library = load_library()
@@ -167,6 +180,7 @@ def api_delete_book(id):
         abort(404)
     library.save()
     return jsonify({'result': removed})
+
 
 @app.route("/api/v1/books/<int:id>", methods=["PUT"])
 def api_update_book(id):

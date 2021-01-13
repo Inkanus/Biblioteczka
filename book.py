@@ -1,5 +1,6 @@
 import json
 
+
 class Book:
     DEFAULTS = {
         "title": "",
@@ -9,6 +10,7 @@ class Book:
         "pages": 0,
         "description": ""
     }
+
     def __init__(self, id, title, author, year, genres, pages, description):
         self.id = id
         self.title = title
@@ -53,6 +55,7 @@ class Book:
             "description": self.description
         }
 
+
 class Library:
     FILEPATH = ""
     SORT_KEYS = {
@@ -64,6 +67,7 @@ class Library:
         "asc": False,
         "desc": True
     }
+
     def __init__(self, books=None):
         if books:
             self.books = books
@@ -111,7 +115,7 @@ class Library:
             id = item.pop('id')
             book = Book.from_dict(id, item)
             books.append(book)
-        
+
         return cls(books)
 
     def to_json(self, books):

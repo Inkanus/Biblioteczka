@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, IntegerField, FieldList, TextAreaField
 from wtforms.validators import DataRequired
 
+
 class EditBook(FlaskForm):
     title = StringField('title', validators=[DataRequired()])
     author = StringField('author', validators=[DataRequired()])
