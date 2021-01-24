@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, IntegerField, FieldList, TextAreaField
+from wtforms import StringField, PasswordField, \
+    IntegerField, FieldList, TextAreaField
 from wtforms.validators import DataRequired
 
 
@@ -9,10 +10,9 @@ class EditBook(FlaskForm):
     genres = FieldList(StringField("genre"), min_entries=1)
     description = TextAreaField('description')
     year = IntegerField(
-        'year',validators=[DataRequired(message="Invalid number")])
+        'year', validators=[DataRequired(message="Invalid number")])
     pages = IntegerField(
         'pages', validators=[DataRequired(message="Invalid number")])
-    
 
     def load_data(self, book):
         self.title.data = book.title
@@ -23,4 +23,3 @@ class EditBook(FlaskForm):
             self.genres.append_entry(genre)
         self.pages.data = str(book.pages) if book.pages else ""
         self.description.data = book.description
-

@@ -1,6 +1,7 @@
 import os
 
-from flask import *
+import flask
+
 from flask_bootstrap import Bootstrap
 
 from book import Library, Book
@@ -46,7 +47,7 @@ def valid_post_put(obj, post=True):
 
 @app.errorhandler(404)
 def not_found(error):
-    return make_response(jsonify({
+    return flask.make_response(flask.jsonify({
         'error': 'Not found',
         'status_code': 404
     }), 404)
@@ -54,7 +55,7 @@ def not_found(error):
 
 @app.errorhandler(400)
 def bad_request(error):
-    return make_response(jsonify({
+    return flask.make_response(flask.jsonify({
         'error': 'Bad request',
         'status_code': 400
     }), 400)
@@ -62,8 +63,8 @@ def bad_request(error):
 
 @app.route("/")
 def index():
-    return render_template("index.html")
- 
+    return flask.render_template("index.html")
+
 
 @app.route("/books")
 @app.route("/books/<int:id>")
@@ -72,14 +73,14 @@ def books(id=None):
     if id is not None:
         book = library.get_book(id)
         if not book:
-            abort(404)
-        return render_template("book.html", book=book)
+            flask.abort(404)
+        return flask.render_template("book.html", book=book)
     else:
-        sort = request.args
+        sort = flask.request.args
         if not sort:
-            return redirect("/books?sort_key=id&sort_order=asc")
+            return flask.redirect("/books?sort_key=id&sort_order=asc")
         books = library.get_books(**sort)
-        return render_template("books.html", books=books, args=sort)
+        return flask.render_template("books.html", books=books, args=sort)
 
 
 @app.route("/edit_book/", methods=["GET", "POST"])
@@ -87,15 +88,15 @@ def books(id=None):
 def edit_book(id=None):
     library = load_library()
     form = EditBook()
-    if request.method == "GET":
+    if flask.request.method == "GET":
         if id is None:
             book = Book.as_blank()
         else:
             book = library.get_book(int(id))
             if not book:
-                abort(404)
+                flask.abort(404)
         form.load_data(book)
-        return render_template(
+        return flask.render_template(
             "editbook.html", book=book,
             form=form, error=None)
     else:
@@ -103,16 +104,16 @@ def edit_book(id=None):
             if id == 'None':
                 id = len(library.books)
             book = Book.from_dict(
-                int(id), dict(request.form),
+                int(id), dict(flask.request.form),
                 from_request=True)
             library.update_book(int(id), book)
             library.save()
-            return redirect("/books/%s" % id)
+            return flask.redirect("/books/%s" % id)
         else:
             book = Book.as_blank()
             book.id = id
             error = form.errors
-            return render_template(
+            return flask.render_template(
                 "editbook.html", book=book,
                 form=form, error=error)
 
@@ -123,23 +124,23 @@ def delete_book(id):
     library.remove_book(id)
     library.reorder()
     library.save()
-    return redirect("/books")
+    return flask.redirect("/books")
 
 
 @app.route("/api/v1/books", methods=["GET"])
 def api_list_books():
     library = load_library()
-    args = request.args
+    args = flask.request.args
     if not args:
         args = {"sort_key": "id", "sort_order": "asc"}
     if not valid_get(args):
-        abort(400)
+        flask.abort(400)
     books = library.get_books(
         **dict(
             (k, args.get(k)) for k in args if k in ["sort_order", "sort_key"]
         )
     )
-    return jsonify({
+    return flask.jsonify({
         "books": library.to_json(books),
         "sort_key": args.get("sort_key", "id"),
         "sort_order": args.get("sort_order", "asc"),
@@ -151,15 +152,15 @@ def api_get_book(id):
     library = load_library()
     book = library.get_book(id)
     if not book:
-        abort(404)
-    return jsonify({"book": book.to_dict()})
+        flask.abort(404)
+    return flask.jsonify({"book": book.to_dict()})
 
 
 @app.route("/api/v1/books", methods=["POST"])
 def api_new_book():
-    data = Library.str_to_json(request.json)
+    data = Library.str_to_json(flask.request.json)
     if not data or not valid_post_put(data):
-        abort(400)
+        flask.abort(400)
     library = load_library()
     book = Book(
         len(library.books),
@@ -169,7 +170,7 @@ def api_new_book():
     )
     library.add_book(book)
     library.save()
-    return jsonify({'book': book.to_dict()}), 201
+    return flask.jsonify({'book': book.to_dict()}), 201
 
 
 @app.route("/api/v1/books/<int:id>", methods=["DELETE"])
@@ -177,20 +178,20 @@ def api_delete_book(id):
     library = load_library()
     removed = library.remove_book(id)
     if not removed:
-        abort(404)
+        flask.abort(404)
     library.save()
-    return jsonify({'result': removed})
+    return flask.jsonify({'result': removed})
 
 
 @app.route("/api/v1/books/<int:id>", methods=["PUT"])
 def api_update_book(id):
-    data = Library.str_to_json(request.json)
+    data = Library.str_to_json(flask.request.json)
     library = load_library()
     book = library.get_book(id)
     if not book:
-        abort(404)
+        flask.abort(404)
     if not data or not valid_post_put(data, post=False):
-        abort(400)
+        flask.abort(400)
     old_book_data = book.to_dict()
     updated_book = Book(
         id,
@@ -200,7 +201,7 @@ def api_update_book(id):
     )
     library.update_book(id, updated_book)
     library.save()
-    return jsonify({'book': updated_book.to_dict()})
+    return flask.jsonify({'book': updated_book.to_dict()})
 
 if __name__ == "__main__":
     app.run()
