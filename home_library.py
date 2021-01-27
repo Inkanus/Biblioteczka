@@ -7,7 +7,7 @@ from flask_bootstrap import Bootstrap
 from book import Library, Book
 from forms import EditBook
 
-app = Flask(__name__)
+app = flask.Flask(__name__)
 app.config["SECRET_KEY"] = "blablabla"
 bootstrap = Bootstrap(app)
 
@@ -202,6 +202,7 @@ def api_update_book(id):
     library.update_book(id, updated_book)
     library.save()
     return flask.jsonify({'book': updated_book.to_dict()})
+
 
 if __name__ == "__main__":
     app.run()
