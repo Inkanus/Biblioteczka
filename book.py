@@ -115,7 +115,7 @@ class Library:
             id = item.pop('id')
             book = Book.from_dict(id, item)
             books.append(book)
-            
+    
         return cls(books)
 
     def to_json(self, books):
